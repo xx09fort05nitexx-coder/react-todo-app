@@ -18,6 +18,8 @@ function App() {
       return
     }
 
+ 
+
     const newTodo: Todo ={
       id: Date.now(),
       text: inputText,
@@ -30,6 +32,14 @@ function App() {
   }
 
  
+   const handleDeleteTodo = (targetId: number) => {
+    const remainingTodos = todos.filter((todo) =>{
+      return todo.id !== targetId
+    })
+
+    setTodos(remainingTodos)
+  }
+
   return(
   <>
   <h1>アッツーのTODOアプリ</h1>
@@ -48,6 +58,9 @@ function App() {
     {todos.map((todo) => (
       <li key={todo.id}>
         {todo.text} 
+        <button onClick={() => handleDeleteTodo(todo.id)}>
+          削除
+          </button>
       </li>
     ))}
   </ul>
