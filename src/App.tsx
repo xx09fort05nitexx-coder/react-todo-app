@@ -13,6 +13,11 @@ function App() {
    const [todos, setTodos] = useState<Todo[]>([])
 
   const handleAddTodo = () =>{
+
+    if(inputText.trim() === ''){
+      return
+    }
+
     const newTodo: Todo ={
       id: Date.now(),
       text: inputText,
@@ -20,6 +25,7 @@ function App() {
     }
 
     setTodos([...todos,newTodo])
+    setInputText('')
     
   }
 
@@ -32,6 +38,7 @@ function App() {
   value={inputText}
   onChange={(event) => {
     setInputText(event.target.value)
+    
   }}
   />
 
