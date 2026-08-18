@@ -40,6 +40,21 @@ function App() {
     setTodos(remainingTodos)
   }
 
+  const handleToggleTodo = (targetId: number) => {
+  const updatedTodos = todos.map((todo) => {
+    if (todo.id === targetId) {
+      return {
+        ...todo,
+        completed: !todo.completed
+      }
+    }
+
+    return todo
+  })
+
+  setTodos(updatedTodos)
+}
+
   return(
   <>
   <h1>アッツーのTODOアプリ</h1>
@@ -57,6 +72,10 @@ function App() {
    <ul>
     {todos.map((todo) => (
       <li key={todo.id}>
+        <input type="checkbox" 
+        checked={todo.completed}
+        onChange={()=>handleToggleTodo(todo.id)}
+        />
         {todo.text} 
         <button onClick={() => handleDeleteTodo(todo.id)}>
           削除
