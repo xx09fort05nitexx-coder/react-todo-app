@@ -1,32 +1,37 @@
-# React + TypeScript + Vite
+# アッツーのTODOアプリ
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+ReactとTypeScriptの学習として作成したTODOアプリです。
 
-Currently, two official plugins are available:
+## URL
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+デプロイ後にURLを記載予定
 
-## React Compiler
+## 主な機能
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- TODOの追加
+- Enterキーでの追加
+- 空欄・空白のみのTODOを追加しない処理
+- TODOの完了・未完了切り替え
+- TODOの個別削除
+- 完了済みTODOの一括削除
+- 「すべて・未完了・完了」の絞り込み
+- 未完了件数の表示
+- localStorageによるTODOの保存
+- スマートフォン表示への対応
+- ダークモードへの対応
 
-## Expanding the Oxlint configuration
+## 使用技術
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- React
+- TypeScript
+- Vite
+- CSS
+- localStorage
+- Git / GitHub
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+## 起動方法
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+リポジトリをクローンします。
+
+```bash
+git clone https://github.com/xx09fort05nitexx-coder/react-todo-app.git
