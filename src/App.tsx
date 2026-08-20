@@ -1,91 +1,159 @@
-
+import { useEffect, useState } from 'react'
 import './App.css'
-import { useState } from 'react'
 
-  type Todo = {
-    id: number
-    text: string
-    completed: boolean
-  }
+type Todo = {
+  id: number
+  text: string
+  completed: boolean
+}
+
+type Filter = 'all' | 'active' | 'completed'
+
+const STORAGE_KEY = 'attsu-todos'
 
 function App() {
-  const [inputText,setInputText] = useState('')
-   const [todos, setTodos] = useState<Todo[]>([])
+  const [inputText, setInputText] = useState('')
+  const [filter, setFilter] = useState<Filter>('all')
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const savedTodos = localStorage.getItem(STORAGE_KEY)
 
-  const handleAddTodo = () =>{
+    if (!savedTodos) return []
 
-    if(inputText.trim() === ''){
-      return
+    try {
+      return JSON.parse(savedTodos) as Todo[]
+    } catch {
+      return []
     }
+  })
 
- 
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+  }, [todos])
 
-    const newTodo: Todo ={
+  const handleAddTodo = () => {
+    const trimmedText = inputText.trim()
+    if (trimmedText === '') return
+
+    const newTodo: Todo = {
       id: Date.now(),
-      text: inputText,
-      completed: false      
+      text: trimmedText,
+      completed: false,
     }
 
-    setTodos([...todos,newTodo])
+    setTodos((currentTodos) => [...currentTodos, newTodo])
     setInputText('')
-    
   }
 
- 
-   const handleDeleteTodo = (targetId: number) => {
-    const remainingTodos = todos.filter((todo) =>{
-      return todo.id !== targetId
-    })
-
-    setTodos(remainingTodos)
+  const handleDeleteTodo = (targetId: number) => {
+    setTodos((currentTodos) =>
+      currentTodos.filter((todo) => todo.id !== targetId),
+    )
   }
 
   const handleToggleTodo = (targetId: number) => {
-  const updatedTodos = todos.map((todo) => {
-    if (todo.id === targetId) {
-      return {
-        ...todo,
-        completed: !todo.completed
-      }
-    }
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === targetId
+          ? { ...todo, completed: !todo.completed }
+          : todo,
+      ),
+    )
+  }
 
-    return todo
+  const handleClearCompleted = () => {
+    setTodos((currentTodos) =>
+      currentTodos.filter((todo) => !todo.completed),
+    )
+  }
+
+  const visibleTodos = todos.filter((todo) => {
+    if (filter === 'active') return !todo.completed
+    if (filter === 'completed') return todo.completed
+    return true
   })
 
-  setTodos(updatedTodos)
-}
+  const activeCount = todos.filter((todo) => !todo.completed).length
+  const hasCompletedTodo = todos.some((todo) => todo.completed)
 
-  return(
-  <>
-  <h1>アッツーのTODOアプリ</h1>
+  return (
+    <main className="todo-app">
+      <h1>アッツーのTODOアプリ</h1>
 
-  <input type="text" placeholder='TODOを入力'
-  value={inputText}
-  onChange={(event) => {
-    setInputText(event.target.value)
-    
-  }}
-  />
-
-  <button onClick={handleAddTodo}>追加</button>
-  
-   <ul>
-    {todos.map((todo) => (
-      <li key={todo.id}>
-        <input type="checkbox" 
-        checked={todo.completed}
-        onChange={()=>handleToggleTodo(todo.id)}
+      <form
+        className="todo-form"
+        onSubmit={(event) => {
+          event.preventDefault()
+          handleAddTodo()
+        }}
+      >
+        <input
+          type="text"
+          placeholder="TODOを入力"
+          aria-label="新しいTODO"
+          value={inputText}
+          onChange={(event) => setInputText(event.target.value)}
         />
-        {todo.text} 
-        <button onClick={() => handleDeleteTodo(todo.id)}>
-          削除
-          </button>
-      </li>
-    ))}
-  </ul>
-  </>
+        <button type="submit">追加</button>
+      </form>
 
- 
+      <div className="todo-controls">
+        <div className="filters" aria-label="TODOの絞り込み">
+          <button
+            className={filter === 'all' ? 'selected' : ''}
+            onClick={() => setFilter('all')}
+          >
+            すべて
+          </button>
+          <button
+            className={filter === 'active' ? 'selected' : ''}
+            onClick={() => setFilter('active')}
+          >
+            未完了
+          </button>
+          <button
+            className={filter === 'completed' ? 'selected' : ''}
+            onClick={() => setFilter('completed')}
+          >
+            完了
+          </button>
+        </div>
+        <span className="todo-count">残り {activeCount} 件</span>
+      </div>
+
+      {visibleTodos.length === 0 ? (
+        <p className="empty-message">表示するTODOはありません</p>
+      ) : (
+        <ul className="todo-list">
+          {visibleTodos.map((todo) => (
+            <li className={todo.completed ? 'completed' : ''} key={todo.id}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={todo.completed}
+                  onChange={() => handleToggleTodo(todo.id)}
+                />
+                <span>{todo.text}</span>
+              </label>
+              <button
+                className="delete-button"
+                onClick={() => handleDeleteTodo(todo.id)}
+                aria-label={`${todo.text}を削除`}
+              >
+                削除
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <button
+        className="clear-button"
+        onClick={handleClearCompleted}
+        disabled={!hasCompletedTodo}
+      >
+        完了済みを削除
+      </button>
+    </main>
   )
 }
 
